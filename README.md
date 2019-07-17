@@ -1,11 +1,11 @@
 # Othello
-Provide project description here
+Our Othello is a board game with two stones played inside a console on a 6 x 6 board. There are 18 **'B'** stones and 18 **'W'** stones that each player must take turns placing them on the board. For every turn, a player must put each stone in a position where it can flip their opponent's disc over. Once all 36 stones are used, a winner is determined based on the most amount of stones a player has placed on the board.
 
 # Developers
 1. **Jalen Jackson**
    1. Introduced the game to the team
    2. Modify haystack file for Othello
-   3. Return a list of the adjacent enemy discs
+   3. Return a dictionary of adjacent discs
 2. **Felicia**
    1. Create a function to flip the enemy discs for each turn
    1. Contribution 2

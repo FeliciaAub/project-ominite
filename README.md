@@ -2,20 +2,20 @@
 Provide project description here
 
 # Developers
-1. **Jalen Jackson (role)**
+1. **Jalen Jackson**
    1. Introduced the game to the team
+   2. Modify haystack file for Othello
+   3. Return a list of the adjacent enemy discs
+2. **Felicia**
+   1. Create a function to flip the enemy discs for each turn
    1. Contribution 2
    1. Contribution ...
-1. **Developer 2 (role)**
-   1. Contribution 1
+3. **Rahin**
+   1. Create a function for the legal moves for a disc
    1. Contribution 2
    1. Contribution ...
-1. **Developer 3 (role)**
-   1. Contribution 1
-   1. Contribution 2
-   1. Contribution ...
-1. **Developer 4 (role)**
-   1. Contribution 1
+4. **James**
+   1. Create psudeocode for Othello's minimax algorithm
    1. Contribution 2
    1. Contribution ...
    

@@ -96,7 +96,21 @@ class Board:
         
     
     '''
-    #Activity 2.2
+    Todo:
+    Input for player - human
+        
+    determine playerTurn (I think black goes first)
+    
+    
+    
+    Determine hueristic values - (optional: figure out the first few moves that are advantagou)
+    
+    determine legal moves
+    
+    determine game end and which player wins
+    
+    TODO!
+    Convert this alg 
     def depth_first_search(self, hayState):
         openList = [self.startHay]
         closedList = []

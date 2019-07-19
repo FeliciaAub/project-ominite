@@ -98,7 +98,6 @@ class Board:
 #Input: stone object, int depth, bool maxPlayer
 #Output: hueristic value assignments to legal moves for current play
 def mini_max(board, piece, depth, maxPlayer):
-  print("Here")
   if maxPlayer == False:
     moves = legal_moves(board, 'B')
   else:
@@ -144,7 +143,6 @@ def legal_moves(board, player):
     for j in range(size):
       stone = board.get_stone_at(i, j)
       if stone.state == oppPlayer:
-        #print(stone.row, stone.col)
         opPosition.append(stone)
   #i is a tile with an opponents stone
   for i in opPosition:
@@ -202,20 +200,27 @@ def get_direction(direction, row, col):
     col = col + 1
   return headTo, row, col
 
+
+
+
+
+#TODO
 def check_for_win(board):
   pass
-
+#TODO
 def apply_move(currentStone, board):
   pass
-
+#TODO
 def set_hueristic_value(currentStone):
   return 1
-
+#TODO
 def get_winner(board):
   pass
-#moves is a list of moves
+#TODO 
 def pick_best_move(moves):
   return 0,0
+#TODO a function to determine who goes 1st 
+#now - human is always black and comp is white <- hardcoded in for testing ATM
 
 #Created By Felicia
 #input: None
@@ -234,10 +239,12 @@ def play_game():
   while gameInPlay:
     print(board)
     moves = []
+    #endpieces is a list of pieces that correspond with legal_moves    may not need
     endpieces = []
+    #players turn
     if player1 == True:
       moves, endpieces = legal_moves(board, 'B')
-      #no legal moves means forfeit turn
+      #no legal moves means player forfeits turn
       if not moves:
         player1 = False
         #if the opposing player was unable to make a move the game is over
@@ -245,21 +252,24 @@ def play_game():
           break
         else:
           passedTurn = True
+	#otherwise get input from player
       else:
         position = False
         passedTurn = False
         while position == False:
           row,col = get_user_postion() #return x,y
-          playerMove = board.get_stone_at(row, col)
-          if playerMove: #if it's valid
-            #if it's legal
-            if playerMove in moves:
+        
+          if int(row) < size and int(col) < size: #if it's valid
+            playerMove = board.get_stone_at(row, col) 
+            if playerMove in moves: #if it's a legal move
+		#this is function will flip over pieces, playerMove is the piece placed and in the list endpieces a corresponding tile
+		# to the list moves will tell you have far to flip 
               apply_move(playerMove, board) #set move on board
               position = True #next turn
               player1 = False
         if check_for_win(board) == False:
           gameInPlay = False
-          
+    #The Computers turn      
     else:
       moves, endpieces = legal_moves(board, 'W')
       if not moves:

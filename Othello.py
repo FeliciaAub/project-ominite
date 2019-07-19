@@ -98,6 +98,7 @@ class Board:
 #Input: stone object, int depth, bool maxPlayer
 #Output: hueristic value assignments to legal moves for current play
 def mini_max(board, piece, depth, maxPlayer):
+  print("Here")
   if maxPlayer == False:
     moves = legal_moves(board, 'B')
   else:
@@ -124,7 +125,9 @@ def mini_max(board, piece, depth, maxPlayer):
 
 
 def get_user_postion():
-  return 'A', 1
+  row = input("Please Enter a row: ")
+  col = input("Please Enter a column: ")
+  return row, col
 
 #created by Felicia
 def legal_moves(board, player):
@@ -232,7 +235,7 @@ def play_game():
     print(board)
     moves = []
     endpieces = []
-    if player1:
+    if player1 == True:
       moves, endpieces = legal_moves(board, 'B')
       #no legal moves means forfeit turn
       if not moves:
@@ -245,8 +248,8 @@ def play_game():
       else:
         position = False
         passedTurn = False
-        while position:
-          row,col = get__user_postion() #return x,y
+        while position == False:
+          row,col = get_user_postion() #return x,y
           playerMove = board.get_stone_at(row, col)
           if playerMove: #if it's valid
             #if it's legal

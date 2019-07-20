@@ -126,7 +126,7 @@ def mini_max(board, piece, depth, maxPlayer):
 def get_user_postion():
   row = input("Please Enter a row: ")
   col = input("Please Enter a column: ")
-  return row, col
+  return int(row), int(col)
 
 #created by Felicia
 def legal_moves(board, player):
@@ -200,9 +200,28 @@ def get_direction(direction, row, col):
     col = col + 1
   return headTo, row, col
 
+#Created By James
+#Function that places a stone
+def place_stone(row, col, board, player):
+    newStone = Stone(row, col, player)
+    board.insert(newStone)
 
-
-
+#Created By James
+#Function that converts a row                       
+def convert_line(begRow, begCol, endRow, endCol, board, player):
+    if begRow is endRow:
+        # num = 3
+        num = begCol + 1
+        while (num != endCol):
+            newStone = Stone(begRow, num, player)
+            board.insert(newStone)
+            num += 1
+    if begCol is endCol:
+        num = begRow + 1
+        while (num != endRow):
+            newStone = Stone(begCol, num, player)
+            board.insert(newStone)
+            num += 1
 
 #TODO
 def check_for_win(board):
@@ -265,6 +284,8 @@ def play_game():
 		#this is function will flip over pieces, playerMove is the piece placed and in the list endpieces a corresponding tile
 		# to the list moves will tell you have far to flip 
               apply_move(playerMove, board) #set move on board
+              place_stone(row, col, board, 'B')
+              convert_line(2, 2, row, col, board, 'B')
               position = True #next turn
               player1 = False
         if check_for_win(board) == False:
@@ -288,6 +309,8 @@ def play_game():
         #TODO need to validate move 
         compMove = board.get_stone_at(moveRow, moveCol)
         apply_move(compMove, board)
+        #If 'W' is the AI, here is where we need the to use place_stone and convert_line
+        #place_stone(row, col, board, 'W')
         player1 = True
         if check_for_win(board) == False:
           gameInPlay = False

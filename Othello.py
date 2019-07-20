@@ -200,9 +200,28 @@ def get_direction(direction, row, col):
     col = col + 1
   return headTo, row, col
 
+#Created By James
+#Function that places a stone
+def place_stone(row, col, board, player):
+    newStone = Stone(row, col, player)
+    board.insert(newStone)
 
-
-
+#Created By James
+#Function that converts a row
+#TODO: make it work for diagonals
+def convert_line(begRow, begCol, endRow, endCol, board, player):
+    if begRow is endRow:
+        num = begRow + 1
+        while (num != endCol):
+            newStone = Stone(begRow, num, player)
+            board.insert(newStone)
+            num += 1
+    if begCol is endCol:
+        num = begCol + 1
+        while (num != endRow):
+            newStone = Stone(num, begCol, player)
+            board.insert(newStone)
+            num += 1
 
 #TODO
 def check_for_win(board):

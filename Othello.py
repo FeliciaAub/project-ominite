@@ -45,7 +45,7 @@ class Board:
 
     #Gets the stone at the row and column specified in the function
     def get_stone_at(self, row, col):
-        return self.stones[int(row)][int(col)]
+       return self.stones[int(row)][int(col)]
 
     #Returns a dictionary of stones adjacent to the stone specified in the paramter.
     #Key: Returns the direction between the stone and the neighbor
@@ -82,7 +82,6 @@ class Board:
     def __repr__(self):
         board = "\n\t  Column\nRow\t"
         r = 0
-
         
         for c in range(0, self.size):
             board += str(c) + " "

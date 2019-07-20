@@ -45,7 +45,7 @@ class Board:
 
     #Gets the stone at the row and column specified in the function
     def get_stone_at(self, row, col):
-        return self.stones[row][col]
+       return self.stones[int(row)][int(col)]
 
     #Returns a dictionary of stones adjacent to the stone specified in the paramter.
     #Key: Returns the direction between the stone and the neighbor
@@ -80,7 +80,7 @@ class Board:
 
     #Prints the board    
     def __repr__(self):
-        board = "\t"
+        board = "\n\t  Column\nRow\t"
         r = 0
         
         for c in range(0, self.size):
@@ -126,7 +126,7 @@ def mini_max(board, piece, depth, maxPlayer):
 def get_user_postion():
   row = input("Please Enter a row: ")
   col = input("Please Enter a column: ")
-  return int(row), int(col)
+  return row, col
 
 #created by Felicia
 def legal_moves(board, player):
@@ -233,7 +233,7 @@ def apply_move(currentStone, board):
 def set_hueristic_value(currentStone):
   return 1
 #TODO
-def (board):
+def get_winner(board):
   pass
 #TODO 
 def pick_best_move(moves):
@@ -284,8 +284,6 @@ def play_game():
 		#this is function will flip over pieces, playerMove is the piece placed and in the list endpieces a corresponding tile
 		# to the list moves will tell you have far to flip 
               apply_move(playerMove, board) #set move on board
-              place_stone(row, col, board, 'B')
-              convert_line(2, 2, row, col, board, 'B')
               position = True #next turn
               player1 = False
         if check_for_win(board) == False:
@@ -309,8 +307,6 @@ def play_game():
         #TODO need to validate move 
         compMove = board.get_stone_at(moveRow, moveCol)
         apply_move(compMove, board)
-        #If 'W' is the AI, here is where we need the to use place_stone and convert_line
-        #place_stone(row, col, board, 'W')
         player1 = True
         if check_for_win(board) == False:
           gameInPlay = False

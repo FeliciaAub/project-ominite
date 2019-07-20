@@ -25,6 +25,15 @@ Provide a general discussion on the data structures and algorithms that were use
 Othello will use the **minimax alogrithm** for the AI in order to get the best move against the player. 
 
 # Usage
-Describe how to compile and run your program.
+Our game will requires python 3 and numpy to run.
+for numpy install instruction, read documentation here https://www.scipy.org/install.html
 
-Python 3 will be required to run the game
+**For Windows**
+   1. open directory with Othello.py using the terminal.
+   2. run "py Othello.py" in your terminal.
+   2. Play the game :)
+   
+ **For Mac**
+   1. open directory with Othello.py using the terminal.
+   2. run "python3 Othello.py" in your terminal.
+   2. Play the game :)

@@ -207,19 +207,19 @@ def place_stone(row, col, board, player):
     board.insert(newStone)
 
 #Created By James
-#Function that converts a row                       
+#Function that converts a row
+#TODO: make it work for diagonals
 def convert_line(begRow, begCol, endRow, endCol, board, player):
     if begRow is endRow:
-        # num = 3
-        num = begCol + 1
+        num = begRow + 1
         while (num != endCol):
             newStone = Stone(begRow, num, player)
             board.insert(newStone)
             num += 1
     if begCol is endCol:
-        num = begRow + 1
+        num = begCol + 1
         while (num != endRow):
-            newStone = Stone(begCol, num, player)
+            newStone = Stone(num, begCol, player)
             board.insert(newStone)
             num += 1
 
@@ -233,7 +233,7 @@ def apply_move(currentStone, board):
 def set_hueristic_value(currentStone):
   return 1
 #TODO
-def get_winner(board):
+def (board):
   pass
 #TODO 
 def pick_best_move(moves):

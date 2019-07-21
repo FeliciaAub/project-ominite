@@ -223,22 +223,31 @@ def convert_line(begRow, begCol, endRow, endCol, board, player):
             board.insert(newStone)
             num += 1
 
+
 #Created by Rahin
-#Function used to count the number of black and white stones
-def count_stones(self):
+#Function to check who won
+def winner(board):
   whites = 0
   blacks = 0
   empty = 0
   size = 6
   for i in range(size):
     for j in range(size):
-      if self.board[i][j] == 'W':
+      if board.b[i][j] == 'W':
           whites += 1
-      elif self.board[i][j] == 'B':
+      elif board.b[i][j] == 'B':
           blacks += 1
       else:
           empty += 1
-  return whites, blacks, empty
+  if blacks > whites:
+    winner = "Black"
+  elif whites > blacks:
+    winner = "White"
+  else:
+    winner = "Tie"
+
+  return winner
+
 
 #TODO
 def check_for_win(board):

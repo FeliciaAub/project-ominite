@@ -45,7 +45,7 @@ class Board:
 
     #Gets the stone at the row and column specified in the function
     def get_stone_at(self, row, col):
-        return self.stones[row][col]
+       return self.stones[int(row)][int(col)]
 
     #Returns a dictionary of stones adjacent to the stone specified in the paramter.
     #Key: Returns the direction between the stone and the neighbor
@@ -80,7 +80,7 @@ class Board:
 
     #Prints the board    
     def __repr__(self):
-        board = "\t"
+        board = "\n\t  Column\nRow\t"
         r = 0
         
         for c in range(0, self.size):
@@ -128,7 +128,7 @@ def get_user_postion():
   col = input("Please Enter a column: ")
   return row, col
 
-#created by Felicia
+#created by Felicia # TODO issue with edge of game
 def legal_moves(board, player):
   movesList = []
   opPosition = []
@@ -155,7 +155,7 @@ def legal_moves(board, player):
         d, row, col = get_direction(pieceDir, i.row,i.col)
         temp = board.get_stone_at(row, col)
         
-        if temp.state != '-':
+        if temp.state != '_':
           while temp.state == oppPlayer and temp.row < size and temp.col < size:
             d, row, col = get_direction(pieceDir, temp.row,temp.col)
             temp = board.get_stone_at(row, col)
@@ -164,6 +164,7 @@ def legal_moves(board, player):
             movesList.append(pieceVal)
             #appends the ending position for flipping of pieces later
             endList.append(temp)
+            
 
   return movesList, endList
 
@@ -200,25 +201,58 @@ def get_direction(direction, row, col):
     col = col + 1
   return headTo, row, col
 
+#Created By James
+#Function that places a stone
+def place_stone(row, col, board, player):
+    newStone = Stone(row, col, player)
+    board.insert(newStone)
 
+#Created By James
+#Function that converts a row
+#TODO: make it work for diagonals
+def convert_line(begRow, begCol, endRow, endCol, board, player):
+    print(begRow, begCol, endRow, endCol)
+    if begRow is endRow:
+        num = begCol + 1
+        while (num != endCol):
+            #newStone = Stone(begRow, num, player)
+            #board.insert(newStone)
+            piece = board.get_stone_at(begRow, num)
+            piece.state = player
+            num += 1
+    if begCol is endCol:
+        num = begRow + 1
+        while (num != endRow):
+            #newStone = Stone(num, begCol, player)
+            #board.insert(newStone)
+            piece = board.get_stone_at(num, begCol)
+            piece.state = player
+            num += 1
 
+#Created by Rahin
+#Function used to count the number of black and white stones
+def count_stones(self):
+  whites = 0
+  blacks = 0
+  empty = 0
+  size = 6
+  for i in range(size):
+    for j in range(size):
+      if self.board[i][j] == 'W':
+          whites += 1
+      elif self.board[i][j] == 'B':
+          blacks += 1
+      else:
+          empty += 1
+  return whites, blacks, empty
 
-
-#TODO
-def check_for_win(board):
-  pass
-#TODO
-def apply_move(currentStone, board):
-  pass
 #TODO
 def set_hueristic_value(currentStone):
   return 1
-#TODO
-def get_winner(board):
-  pass
+
 #TODO 
 def pick_best_move(moves):
-  return 0,0
+  return moves[0]
 #TODO a function to determine who goes 1st 
 #now - human is always black and comp is white <- hardcoded in for testing ATM
 
@@ -243,7 +277,12 @@ def play_game():
     endpieces = []
     #players turn
     if player1 == True:
+      piece = board.get_stone_at(2,1)
+      print(piece)
       moves, endpieces = legal_moves(board, 'B')
+      for i in moves:
+        print(i.row, i.col, i.state)
+      print(moves)
       #no legal moves means player forfeits turn
       if not moves:
         player1 = False
@@ -257,18 +296,21 @@ def play_game():
         position = False
         passedTurn = False
         while position == False:
-          row,col = get_user_postion() #return x,y
-        
-          if int(row) < size and int(col) < size: #if it's valid
-            playerMove = board.get_stone_at(row, col) 
+          rowStr,colStr = get_user_postion() #return x,y
+          row = rowStr
+          col = colStr
+          if row < size and col < size and row >=0 and col >=0: #if it's valid
+            playerMove = board.get_stone_at(row, col)     
             if playerMove in moves: #if it's a legal move
-		#this is function will flip over pieces, playerMove is the piece placed and in the list endpieces a corresponding tile
-		# to the list moves will tell you have far to flip 
-              apply_move(playerMove, board) #set move on board
+              place_stone(row, col, board, 'B')
+              indices = [i for i, x in enumerate(moves) if x == playerMove]
+              #TODO the indices of moves matches those in endpieces this should get multiple directions
+              for i in indices:
+                endPiece = endpieces[i]
+                convert_line(playerMove.row, playerMove.col, endPiece.row, endPiece.col, board, 'B')
               position = True #next turn
               player1 = False
-        if check_for_win(board) == False:
-          gameInPlay = False
+
     #The Computers turn      
     else:
       moves, endpieces = legal_moves(board, 'W')
@@ -282,16 +324,25 @@ def play_game():
         passedTurn = False
         #asign hueristics
         for i in moves:
-          mini_max(board, i, 3, True)
+          newBoard = board
+          mini_max(newBoard, i, 3, True)
+
+
         #pick the highest value
-        moveRow, moveCol = pick_best_move(moves)
+        compMove = pick_best_move(moves)
         #TODO need to validate move 
-        compMove = board.get_stone_at(moveRow, moveCol)
-        apply_move(compMove, board)
+        
+        place_stone(compMove.row, compMove.col, board, 'W')
+        indices = [i for i, x in enumerate(moves) if x == compMove]
+        #TODO the indices of moves matches those in endpieces this should get multiple directions
+        for i in indices:
+          endPiece = endpieces[i]
+          convert_line(compMove.row, compMove.col, endPiece.row, endPiece.col, board, 'W')
+                
         player1 = True
-        if check_for_win(board) == False:
-          gameInPlay = False
-  get_winner(board)      
+
+  #white, black, blank = count_stones(board)
+  #TODO do something 
       
 
 

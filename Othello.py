@@ -240,13 +240,12 @@ def winner(board):
       else:
           empty += 1
   if blacks > whites:
-    winner = "Black"
+    return "Black"
   elif whites > blacks:
-    winner = "White"
+    return "White"
   else:
-    winner = "Tie"
+    return "Tie"
 
-  return winner
 
 
 #TODO

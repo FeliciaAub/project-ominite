@@ -223,6 +223,23 @@ def convert_line(begRow, begCol, endRow, endCol, board, player):
             board.insert(newStone)
             num += 1
 
+#Created by Rahin
+#Function used to count the number of black and white stones
+def count_stones(self):
+  whites = 0
+  blacks = 0
+  empty = 0
+  size = 6
+  for i in range(size):
+    for j in range(size):
+      if self.board[i][j] == 'W':
+          whites += 1
+      elif self.board[i][j] == 'B':
+          blacks += 1
+      else:
+          empty += 1
+  return whites, blacks, empty
+
 #TODO
 def check_for_win(board):
   pass

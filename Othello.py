@@ -43,7 +43,15 @@ class Board:
         self.insert(whiteStoneOne)
         self.insert(whiteStoneTwo)
 
-        self.flankDirection = ""
+    def count(self, state):
+        count = 0
+        for j in range(SIZE):
+            for i in range(SIZE):
+                stone = self.get_stone_at(i, j)
+                if stone.state == state:
+                    count += 1
+        return count
+
 
     #Inserts the stone on the board at a specific row & column set in the stone's constructor
     def insert(self, stone):
@@ -57,6 +65,9 @@ class Board:
     #Key: Returns the direction between the stone and the neighbor
     #Value: Returns the neighbor
     def neighbors_of(self, stone):
+        if stone is None:
+            return None
+
         if stone.row - 1 >= 0:
             stone.neighbors.update({"NORTH" : self.stones[stone.row - 1][stone.col]})
 
@@ -156,19 +167,29 @@ def legal_moves(board, player):
 
     #Helper function for my modifications to find the directions of the flank
   def check_directions(neighbors, directionOne, directionTwo):
-    if neighbors[directionOne] is None or neighbors[directionTwo] is None:
+    if directionOne not in neighbors:
         return
 
-    if neighbors[directionOne].state is player:
-        while neighbors[directionTwo] is not "-" and neighbors[directionTwo] is enemy:
-            moveNeighbors = board.neighbors_of(neighbors[directionTwo])
-            neighbors.update({directionTwo : moveNeighbors[directionTwo]})
+    if directionTwo not in neighbors:
+        return
 
-        if neighbors[directionTwo] not in movesList:
+    if neighbors[directionOne].state == player:
+        if neighbors[directionTwo].state == "-" and neighbors[directionTwo] not in movesList:
             movesList.append(neighbors[directionTwo])
+            return
+        else:
+            while neighbors[directionTwo].state == enemy:
+                moveNeighbors = board.neighbors_of(neighbors[directionTwo])
+                if directionTwo not in moveNeighbors:
+                    return
+
+                if moveNeighbors[directionTwo].state == "-" and moveNeighbors[directionTwo] not in movesList:
+                    movesList.append(moveNeighbors[directionTwo])
+                    return
+
+                neighbors.update({directionTwo : moveNeighbors[directionTwo]})
 
   for stone in enemyPieces:
-
     check_directions(board.neighbors_of(stone), "SOUTH", "NORTH")
     check_directions(board.neighbors_of(stone), "NORTH", "SOUTH")
     check_directions(board.neighbors_of(stone), "EAST", "WEST")
@@ -178,32 +199,10 @@ def legal_moves(board, player):
     check_directions(board.neighbors_of(stone), "NORTHWEST", "SOUTHEAST")
     check_directions(board.neighbors_of(stone), "SOUTHEAST", "NORTHWEST")
 
-
-  """
-  #i is a tile with an opponents stone
-  for i in enemyPieces:
-    #a list of every direction
-    for pieceDir, pieceVal in i.neighbors.items():
-      if pieceVal.state == '-':
-        #search for flank
-        #set our current piece in position
-        d, row, col = get_direction(pieceDir, i.row,i.col)
-        if valid(row,col):
-          temp = board.get_stone_at(row, col)
-          if temp.state != '-':
-            while temp.state == enemy and temp.row < SIZE-1 and temp.col < SIZE-1 and temp.row >=0 and temp.col >=0:
-              d, row, col = get_direction(pieceDir, temp.row,temp.col)
-              temp = board.get_stone_at(row, col)
-
-            if temp.state == player:
-              #appends the original move as valid
-              if pieceVal not in movesList:
-                  movesList.append(pieceVal)
-  """
-
   return movesList
 
 #created by Felicia Helper Function for legal_moves
+''' Not Required Anymore
 def get_direction(direction, row, col):
   headTo = ""
   if direction == 'NORTHEAST':
@@ -235,6 +234,7 @@ def get_direction(direction, row, col):
     row = row + 1
     col = col + 1
   return headTo, row, col
+'''
 
 #Created By James
 #Function that places a stone
@@ -246,16 +246,17 @@ def place_stone(row, col, board, player):
 
 #Created by Rahin
 #Function to check who won
+#Jalen fixed error 'board.b[i][j]
 def winner(board):
   whites = 0
   blacks = 0
   empty = 0
 
-  for i in range(SIZE):
-    for j in range(SIZE):
-      if board.b[i][j] == 'W':
+  for j in range(SIZE):
+    for i in range(SIZE):
+      if board.get_stone_at(i, j).state == 'W':
           whites += 1
-      elif board.b[i][j] == 'B':
+      elif board.get_stone_at(i, j).state == 'B':
           blacks += 1
       else:
           empty += 1
@@ -266,27 +267,7 @@ def winner(board):
   else:
     return "Tie"
 
-'''
-#Modified By Jalen
-def convert_line(startStone, board):
-    enemy = None
-    if startStone.state is 'B':
-        enemy = 'W'
-    elif startStone.state is 'W':
-        enemy = 'B'
-    neighbors = board.neighbors_of(startStone)
-    flankStack = list(filter(lambda stone : stone[1].state == enemy, neighbors.items()))
-    while len(flankStack) > 0:
-        currentFlank = flankStack.pop(0)
-        flankDirection = currentFlank[0]
-        flankStone = currentFlank[1]
-        flankStone.state = startStone
-
-
-        nextFlank = list(filter(lambda stone : stone[0] == flankDirection and stone[1].state == enemy, board.neighbors_of(flankStone).items()))
-        flankStack = nextFlank
-'''
-
+#Modified by Felicia
 def convert_line(startStone, board):
     enemy = None
     if startStone.state is 'B':
@@ -304,10 +285,17 @@ def convert_line(startStone, board):
         flankDirection = currentFlank[0]
         #move in that direction
         flankStone = currentFlank[1]
+
         #change the stone?
-        while(flankStone.state == enemy):
+        while flankStone.state == enemy:
           flipList.append(flankStone)
           flankStone = flankStone.neighbors.get(flankDirection)
+
+          #Jalen added this in order to check if there is no stone being checked
+          if flankStone is None:
+            return
+
+
         if flankStone.state == startStone.state:
           while flipList:
             currentStone = flipList.pop()
@@ -363,6 +351,9 @@ def play_game():
     print(board)
 
     moves = []
+
+    print("Black Stones: " + str(board.count('B')))
+    print("White Stones: " + str(board.count('W')))
 
     #players turn
     if player1 == True:
@@ -424,7 +415,13 @@ def play_game():
 
           player1 = True
 
-  #white, black, blank = count_stones(board)
+  whoWon = winner(board)
+  if whoWon == "Black" or whoWon == "White":
+    print(whoWon + " Won")
+  else:
+    print(whoWon)
+
+
   #TODO do something
 
 if __name__ == "__main__":

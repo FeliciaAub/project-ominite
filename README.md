@@ -22,7 +22,9 @@ Our Othello is a board game with two stones played inside a console on a 6 x 6 b
 # Technical implementation
 Provide a general discussion on the data structures and algorithms that were used to achieve the goals of the project
 
-Othello will use the **minimax alogrithm** for the AI in order to get the best move against the player. 
+Othello will use the **minimax alogrithm** for the AI in order to get the best move against the player.
+
+The heuristics for the algorithm is going to be based on how many players the discs has on the board. The leaf node will occur in the minimax algorithm when the player wins or loses. 
 
 # Usage
 Our game will requires python 3 and numpy to run.

@@ -1,5 +1,9 @@
 import numpy as np
+import random
+import time
+import collections
 
+SIZE = 6
 #Class created by Jalen Jackson
 class Stone:
     def __init__(self, row, col, state):
@@ -7,8 +11,8 @@ class Stone:
         self.row = row
         self.col = col
 
-	#Initalize as a dictionary
-        self.neighbors = {}
+    #Initalize as a dictionary
+        self.neighbors = collections.defaultdict(lambda : None)
 
     #Prints the type of stone
     def __repr__(self):
@@ -19,11 +23,11 @@ class Board:
 
     #Initializes the board with two black and two white stones on the middle of the board with size N
     def __init__(self, size):
-        self.size = size
+        self.size = SIZE
         self.stones = [[None] * size for i in range(0, size)]
-        
-        for j in range(size):
-            for i in range(size):
+
+        for j in range(SIZE):
+            for i in range(SIZE):
                 self.insert(Stone(i, j, '-'))
 
         middleLeft = int((self.size / 2) - 1)
@@ -38,7 +42,9 @@ class Board:
         whiteStoneTwo = Stone(middleRight, middleLeft, 'W')
         self.insert(whiteStoneOne)
         self.insert(whiteStoneTwo)
-            
+
+        self.flankDirection = ""
+
     #Inserts the stone on the board at a specific row & column set in the stone's constructor
     def insert(self, stone):
         self.stones[stone.row][stone.col] = stone
@@ -50,13 +56,12 @@ class Board:
     #Returns a dictionary of stones adjacent to the stone specified in the paramter.
     #Key: Returns the direction between the stone and the neighbor
     #Value: Returns the neighbor
-    #Felicia NORTH AND SOUTH MIXED
     def neighbors_of(self, stone):
         if stone.row - 1 >= 0:
-            stone.neighbors.update({"SOUTH" : self.stones[stone.row - 1][stone.col]})
+            stone.neighbors.update({"NORTH" : self.stones[stone.row - 1][stone.col]})
 
         if stone.row + 1 < self.size:
-            stone.neighbors.update({"NORTH" : self.stones[stone.row + 1][stone.col]})
+            stone.neighbors.update({"SOUTH" : self.stones[stone.row + 1][stone.col]})
 
         if stone.col - 1 >= 0:
             stone.neighbors.update({"WEST" : self.stones[stone.row][stone.col - 1]})
@@ -65,28 +70,28 @@ class Board:
             stone.neighbors.update({"EAST" : self.stones[stone.row][stone.col + 1]})
 
         if stone.row - 1 >= 0 and stone.col - 1 >= 0:
-            stone.neighbors.update({"SOUTHWEST" : self.stones[stone.row - 1][stone.col - 1]})
+            stone.neighbors.update({"NORTHWEST" : self.stones[stone.row - 1][stone.col - 1]})
 
         if stone.row - 1 >= 0 and stone.col + 1 < self.size:
-            stone.neighbors.update({"SOUTHEAST" : self.stones[stone.row - 1][stone.col + 1]})
+            stone.neighbors.update({"NORTHEAST" : self.stones[stone.row - 1][stone.col + 1]})
 
         if stone.row + 1 < self.size and stone.col - 1 >= 0:
-            stone.neighbors.update({"NORTHWEST" : self.stones[stone.row + 1][stone.col - 1]})
+            stone.neighbors.update({"SOUTHWEST" : self.stones[stone.row + 1][stone.col - 1]})
 
         if stone.row + 1 < self.size and stone.col + 1 < self.size:
-            stone.neighbors.update({"NORTHEAST" : self.stones[stone.row + 1][stone.col + 1]})
-        
+            stone.neighbors.update({"SOUTHEAST" : self.stones[stone.row + 1][stone.col + 1]})
+
         return stone.neighbors
 
-    #Prints the board    
+    #Prints the board
     def __repr__(self):
         board = "\n\t  Column\nRow\t"
         r = 0
-        
+
         for c in range(0, self.size):
             board += str(c) + " "
         board += "\n"
-        
+
         for col in np.array(self.stones):
             board += str(r) + "\t"
             for stone in col:
@@ -94,6 +99,7 @@ class Board:
             board += "\n"
             r += 1
         return board
+
 #Created By Felicia based on algorithm psuedocode
 #Input: stone object, int depth, bool maxPlayer
 #Output: hueristic value assignments to legal moves for current play
@@ -102,7 +108,7 @@ def mini_max(board, piece, depth, maxPlayer):
     moves = legal_moves(board, 'B')
   else:
     moves = legal_moves(board, 'W')
-  
+
   if depth == 0 or moves == None:
     return set_hueristic_value(piece)
   elif maxPlayer:
@@ -124,65 +130,95 @@ def mini_max(board, piece, depth, maxPlayer):
 
 
 def get_user_postion():
-  row = input("Please Enter a row: ")
-  col = input("Please Enter a column: ")
+  row = int(input("Please Enter a row: "))
+  col = int(input("Please Enter a column: "))
+
   return row, col
 
+
 #created by Felicia
+#Modified by Jalen
 def legal_moves(board, player):
   movesList = []
-  opPosition = []
-  endList = []
-  size = 6
+  enemyPieces = []
   if player == 'W':
-    oppPlayer ='B'
+    enemy ='B'
   else:
-    oppPlayer = 'W'
-    #get a list of all of the opponents pieces
-  for i in range(size):
-    for j in range(size):
+    enemy = 'W'
+
+
+  #get a list of all of the opponents pieces
+  for i in range(SIZE):
+    for j in range(SIZE):
       stone = board.get_stone_at(i, j)
-      if stone.state == oppPlayer:
-        opPosition.append(stone)
+      if stone.state == enemy:
+        enemyPieces.append(stone)
+
+    #Helper function for my modifications to find the directions of the flank
+  def check_directions(neighbors, directionOne, directionTwo):
+    if neighbors[directionOne] is None or neighbors[directionTwo] is None:
+        return
+
+    if neighbors[directionOne].state is player:
+        while neighbors[directionTwo] is not "-" and neighbors[directionTwo] is enemy:
+            moveNeighbors = board.neighbors_of(neighbors[directionTwo])
+            neighbors.update({directionTwo : moveNeighbors[directionTwo]})
+
+        if neighbors[directionTwo] not in movesList:
+            movesList.append(neighbors[directionTwo])
+
+  for stone in enemyPieces:
+
+    check_directions(board.neighbors_of(stone), "SOUTH", "NORTH")
+    check_directions(board.neighbors_of(stone), "NORTH", "SOUTH")
+    check_directions(board.neighbors_of(stone), "EAST", "WEST")
+    check_directions(board.neighbors_of(stone), "WEST", "EAST")
+    check_directions(board.neighbors_of(stone), "NORTHEAST", "SOUTHWEST")
+    check_directions(board.neighbors_of(stone), "SOUTHWEST", "NORTHEAST")
+    check_directions(board.neighbors_of(stone), "NORTHWEST", "SOUTHEAST")
+    check_directions(board.neighbors_of(stone), "SOUTHEAST", "NORTHWEST")
+
+
+  """
   #i is a tile with an opponents stone
-  for i in opPosition:
-    #a list of every direction 
+  for i in enemyPieces:
+    #a list of every direction
     for pieceDir, pieceVal in i.neighbors.items():
-      #indicates empty space next to opponents piece 
       if pieceVal.state == '-':
         #search for flank
         #set our current piece in position
         d, row, col = get_direction(pieceDir, i.row,i.col)
-        temp = board.get_stone_at(row, col)
-        
-        if temp.state != '-':
-          while temp.state == oppPlayer and temp.row < size and temp.col < size:
-            d, row, col = get_direction(pieceDir, temp.row,temp.col)
-            temp = board.get_stone_at(row, col)
-          if temp.state == player:
-            #appends the original move as valid
-            movesList.append(pieceVal)
-            #appends the ending position for flipping of pieces later
-            endList.append(temp)
+        if valid(row,col):
+          temp = board.get_stone_at(row, col)
+          if temp.state != '-':
+            while temp.state == enemy and temp.row < SIZE-1 and temp.col < SIZE-1 and temp.row >=0 and temp.col >=0:
+              d, row, col = get_direction(pieceDir, temp.row,temp.col)
+              temp = board.get_stone_at(row, col)
 
-  return movesList, endList
+            if temp.state == player:
+              #appends the original move as valid
+              if pieceVal not in movesList:
+                  movesList.append(pieceVal)
+  """
+
+  return movesList
 
 #created by Felicia Helper Function for legal_moves
 def get_direction(direction, row, col):
   headTo = ""
-  if direction == 'SOUTHEAST':
-    headTo = 'NORTHWEST'
+  if direction == 'NORTHEAST':
+    headTo = 'SOUTHWEST'
     row = row + 1
     col = col - 1
-  elif direction == 'NORTHWEST':
-    headTo = 'SOUTHEAST'
+  elif direction == 'SOUTHWEST':
+    headTo = 'NORTHEAST'
     row = row - 1
     col = col + 1
-  elif direction == 'NORTH':
-    headTo = 'SOUTH'
-    row = row - 1
   elif direction == 'SOUTH':
     headTo = 'NORTH'
+    row = row - 1
+  elif direction == 'NORTH':
+    headTo = 'SOUTH'
     row = row + 1
   elif direction == 'EAST':
     headTo = 'WEST'
@@ -190,12 +226,12 @@ def get_direction(direction, row, col):
   elif direction == 'WEST':
     headTo = 'EAST'
     col = col + 1
-  elif direction == 'NORTHEAST':
-    headTo = 'SOUTHWEST'
+  elif direction == 'SOUTHEAST':
+    headTo = 'NORTHWEST'
     row = row - 1
     col = col - 1
-  elif direction == 'SOUTHWEST':
-    headTo = 'NORTHEAST'
+  elif direction == 'NORTHWEST':
+    headTo = 'SOUTHEAST'
     row = row + 1
     col = col + 1
   return headTo, row, col
@@ -206,22 +242,6 @@ def place_stone(row, col, board, player):
     newStone = Stone(row, col, player)
     board.insert(newStone)
 
-#Created By James
-#Function that converts a row
-#TODO: make it work for diagonals
-def convert_line(begRow, begCol, endRow, endCol, board, player):
-    if begRow is endRow:
-        num = begRow + 1
-        while (num != endCol):
-            newStone = Stone(begRow, num, player)
-            board.insert(newStone)
-            num += 1
-    if begCol is endCol:
-        num = begCol + 1
-        while (num != endRow):
-            newStone = Stone(num, begCol, player)
-            board.insert(newStone)
-            num += 1
 
 
 #Created by Rahin
@@ -230,9 +250,9 @@ def winner(board):
   whites = 0
   blacks = 0
   empty = 0
-  size = 6
-  for i in range(size):
-    for j in range(size):
+
+  for i in range(SIZE):
+    for j in range(SIZE):
       if board.b[i][j] == 'W':
           whites += 1
       elif board.b[i][j] == 'B':
@@ -246,48 +266,109 @@ def winner(board):
   else:
     return "Tie"
 
+'''
+#Modified By Jalen
+def convert_line(startStone, board):
+    enemy = None
+    if startStone.state is 'B':
+        enemy = 'W'
+    elif startStone.state is 'W':
+        enemy = 'B'
+    neighbors = board.neighbors_of(startStone)
+    flankStack = list(filter(lambda stone : stone[1].state == enemy, neighbors.items()))
+    while len(flankStack) > 0:
+        currentFlank = flankStack.pop(0)
+        flankDirection = currentFlank[0]
+        flankStone = currentFlank[1]
+        flankStone.state = startStone
 
+
+        nextFlank = list(filter(lambda stone : stone[0] == flankDirection and stone[1].state == enemy, board.neighbors_of(flankStone).items()))
+        flankStack = nextFlank
+'''
+
+def convert_line(startStone, board):
+    enemy = None
+    if startStone.state is 'B':
+        enemy = 'W'
+    elif startStone.state is 'W':
+        enemy = 'B'
+
+    neighbors = board.neighbors_of(startStone)
+    flankStack = list(filter(lambda stone : stone is not None and stone[1].state == enemy, neighbors.items()))
+    while len(flankStack) > 0:
+        #grab off stack
+        flipList = []
+        currentFlank = flankStack.pop(0)
+        #get the direction
+        flankDirection = currentFlank[0]
+        #move in that direction
+        flankStone = currentFlank[1]
+        #change the stone?
+        while(flankStone.state == enemy):
+          flipList.append(flankStone)
+          flankStone = flankStone.neighbors.get(flankDirection)
+        if flankStone.state == startStone.state:
+          while flipList:
+            currentStone = flipList.pop()
+            apply_move(currentStone, startStone.state, board)
+
+        #nextFlank = list(filter(lambda stone : stone[0] == flankDirection and stone[1].state == enemy, board.neighbors_of(flankStone).items()))
+        #flankStack = nextFlank
+
+
+def valid(row,col):
+
+  if row >= 0 and row < SIZE and col < SIZE and col >= 0:
+    return True
+  else:
+    return False
 
 #TODO
 def check_for_win(board):
   pass
 #TODO
-def apply_move(currentStone, board):
-  pass
+
+def apply_move(currentStone, player, board):
+    stone = board.get_stone_at(currentStone.row, currentStone.col)
+    stone.state = player
+    board.insert(stone)
+
 #TODO
 def set_hueristic_value(currentStone):
   return 1
+
 #TODO
-def get_winner(board):
-  pass
-#TODO 
 def pick_best_move(moves):
-  return 0,0
-#TODO a function to determine who goes 1st 
+    move = random.choice(moves)
+    return move
+#TODO a function to determine who goes 1st
 #now - human is always black and comp is white <- hardcoded in for testing ATM
 
 #Created By Felicia
 #input: None
 #Controls the game flow
 def play_game():
-  size = 6
-  board = Board(size)
-  for i in range(size):
-    for j in range(size):
-      board.neighbors_of(board.get_stone_at(i,j))
+
+  board = Board(SIZE)
+  for i in range(SIZE):
+      for j in range(SIZE):
+        board.neighbors_of(board.get_stone_at(i,j))
   gameInPlay = True
   #assume Player1 is Human and moving 'B' the blackstones
-  player1 = False
+  player1 = True
   passedTurn = False
-  
+
   while gameInPlay:
     print(board)
+
     moves = []
-    #endpieces is a list of pieces that correspond with legal_moves    may not need
-    endpieces = []
+
     #players turn
     if player1 == True:
-      moves, endpieces = legal_moves(board, 'B')
+      moves = legal_moves(board, 'B')
+      for i in moves:
+        print(i.row, i.col)
       #no legal moves means player forfeits turn
       if not moves:
         player1 = False
@@ -296,26 +377,26 @@ def play_game():
           break
         else:
           passedTurn = True
-	#otherwise get input from player
+    #otherwise get input from player
       else:
         position = False
         passedTurn = False
         while position == False:
           row,col = get_user_postion() #return x,y
-        
-          if int(row) < size and int(col) < size: #if it's valid
-            playerMove = board.get_stone_at(row, col) 
+          if valid(row,col):
+            playerMove = board.get_stone_at(row, col)
+
             if playerMove in moves: #if it's a legal move
-		#this is function will flip over pieces, playerMove is the piece placed and in the list endpieces a corresponding tile
-		# to the list moves will tell you have far to flip 
-              apply_move(playerMove, board) #set move on board
+              apply_move(playerMove, 'B', board)
+              convert_line(playerMove, board)
               position = True #next turn
               player1 = False
-        if check_for_win(board) == False:
-          gameInPlay = False
-    #The Computers turn      
+
+    #The Computers turn
     else:
-      moves, endpieces = legal_moves(board, 'W')
+      moves = legal_moves(board, 'W')
+      for i in moves:
+        print(i.row, i.col)
       if not moves:
         if passedTurn == True:
           break
@@ -326,18 +407,25 @@ def play_game():
         passedTurn = False
         #asign hueristics
         for i in moves:
-          mini_max(board, i, 3, True)
-        #pick the highest value
-        moveRow, moveCol = pick_best_move(moves)
-        #TODO need to validate move 
-        compMove = board.get_stone_at(moveRow, moveCol)
-        apply_move(compMove, board)
-        player1 = True
-        if check_for_win(board) == False:
-          gameInPlay = False
-  get_winner(board)      
-      
+          newBoard = board
+          #mini_max(newBoard, i, 3, True)
 
+
+        #pick the highest value
+        compMove = pick_best_move(moves)
+
+        #TODO need to validate move
+
+        time.sleep(2)
+
+        if valid(compMove.row, compMove.col):
+          apply_move(compMove, 'W', board)
+          convert_line(compMove, board)
+
+          player1 = True
+
+  #white, black, blank = count_stones(board)
+  #TODO do something
 
 if __name__ == "__main__":
     play_game()

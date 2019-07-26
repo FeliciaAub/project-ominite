@@ -199,6 +199,7 @@ def legal_moves(board, player):
     check_directions(board.neighbors_of(stone), "NORTHWEST", "SOUTHEAST")
     check_directions(board.neighbors_of(stone), "SOUTHEAST", "NORTHWEST")
 
+  movesList.sort(key=lambda stone: (stone.row, stone.col))
   return movesList
 
 #created by Felicia Helper Function for legal_moves
@@ -421,6 +422,7 @@ def play_game():
   else:
     print(whoWon)
 
+  time.sleep(10)
 
   #TODO do something
 

@@ -126,7 +126,7 @@ class Board:
 # Created By Felicia based on algorithm psuedocode
 # Input: stone object, int depth, bool maxPlayer
 # Output: hueristic value assignments to legal moves for current play
-def mini_max(board, depth=3, alpha=-math.inf, beta=math.inf, maxPlayer=True):
+def mini_max(board, depth=2, alpha=-math.inf, beta=math.inf, maxPlayer=True):
     if maxPlayer == True:
         moves = legal_moves(board, "W")
     else:
@@ -336,7 +336,48 @@ def apply_move(row, col, player, board):
 # Function created by Felicia
 # Finished by Jalen
 def set_heuristic_value(board):
-    return board.count("W") - board.count("B")
+    score = 0
+    # Evaluate disc count
+    score += board.count("W") / 100
+    score -= board.count("B") / 100
+
+    # Legal Moves Count
+    score += len(legal_moves(board, "W"))
+    score -= len(legal_moves(board, "B"))
+
+    # Corners Captured
+    topLeftCorner = board.get_stone_at(0, 0)
+    topRightCorner = board.get_stone_at(0, SIZE - 1)
+    botLeftCorner = board.get_stone_at(SIZE - 1, 0)
+    botRightCorner = board.get_stone_at(SIZE - 1, SIZE - 1)
+
+    whiteCornersCaptured = 0
+    blackCornersCaptured = 0
+
+    if topLeftCorner.state == "W":
+        whiteCornersCaptured += 1
+    elif topLeftCorner.state == "B":
+        blackCornersCaptured += 1
+
+    if botLeftCorner.state == "W":
+        whiteCornersCaptured += 1
+    elif botLeftCorner.state == "B":
+        blackCornersCaptured += 1
+
+    if topRightCorner.state == "W":
+        whiteCornersCaptured += 1
+    elif topRightCorner.state == "B":
+        blackCornersCaptured += 1
+
+    if botRightCorner.state == "W":
+        whiteCornersCaptured += 1
+    elif botRightCorner.state == "B":
+        blackCornersCaptured += 1
+
+    score += 10 * whiteCornersCaptured
+    score -= 10 * blackCornersCaptured
+
+    return score
 
 
 # TODO
@@ -397,7 +438,7 @@ def play_game():
                 position = False
                 passedTurn = False
                 while position == False:
-                    #row, col = get_user_postion()  # return x,y
+                    # row, col = get_user_postion()  # return x,y
                     move = random.choice(moves)
                     row = move.row
                     col = move.col

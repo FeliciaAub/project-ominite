@@ -16,8 +16,10 @@ Our Othello is a board game with two stones played inside a console on a 6 x 6 b
    1. Contribution ...
 4. **James**
    1. Create psudeocode for Othello's minimax algorithm
-   1. Contribution 2
-   1. Contribution ...
+   2. place_stone function
+   3. Original convert_line function
+   4. Game testing
+   
    
 # Technical implementation
 Provide a general discussion on the data structures and algorithms that were used to achieve the goals of the project

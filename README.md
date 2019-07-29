@@ -17,7 +17,7 @@ Our Othello is a board game with two stones played inside a console on a 6 x 6 b
 4. **James**
    1. Initial implementation of apply_piece
    1. Design contribution and determined the hueristics values
-   1. 
+   1. Testing and finding bugs and errors
    
 # Technical implementation
 Provide a general discussion on the data structures and algorithms that were used to achieve the goals of the project

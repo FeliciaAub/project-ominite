@@ -4,22 +4,20 @@ Our Othello is a board game with two stones played inside a console on a 6 x 6 b
 # Developers
 1. **Jalen Jackson**
    1. Introduced the game to the team
-   2. Modify haystack file for Othello
-   3. Return a dictionary of adjacent discs
+   2. Created classes stone and board creation
+   3. Implementation of mini_max and hueristics and finalized implementation 
 2. **Felicia**
-   1. Create a function to flip the enemy discs for each turn
-   1. Contribution 2
-   1. Contribution ...
+   1. Design and modularization of program functionality
+   2. Initial implementation of Legal_Moves function and rough creation of AI
+   3. Cooperative bug fixes and function implementation
 3. **Rahin**
-   1. Create a function for the legal moves for a disc
-   1. Contribution 2
-   1. Contribution ...
+   1. Created initial implentation to determine winner
+   1. Design contribution
+   1. Testing and finding bugs and errors
 4. **James**
-   1. Create psudeocode for Othello's minimax algorithm
-   2. place_stone function
-   3. Original convert_line function
-   4. Game testing
-   
+   1. Initial implementation of apply_piece
+   1. Design contribution and determined the hueristics values
+   1. 
    
 # Technical implementation
 Provide a general discussion on the data structures and algorithms that were used to achieve the goals of the project

@@ -24,7 +24,11 @@ Provide a general discussion on the data structures and algorithms that were use
 
 Othello will use the **minimax alogrithm** for the AI in order to get the best move against the player.
 
-The heuristics for the algorithm is going to be based on how many players the discs has on the board. The leaf node will occur in the minimax algorithm when the player wins or loses. 
+The heuristics for the algorithm is going to be based on:
+   1. How many pieces the AI has compared to the player?
+   2. How many AI pieces can the player not flip?
+   3. How much corners the AI has?
+The leaf node will occur in the minimax algorithm when the player wins or loses. 
 
 # Usage
 Our game will requires python 3 and numpy to run.

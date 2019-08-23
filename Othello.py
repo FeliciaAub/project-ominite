@@ -4,10 +4,12 @@ import time
 import collections
 import math
 import sys
+import pygame
 from copy import deepcopy
 
 SIZE = 6
-# Class created by Jalen Jackson
+
+# Class created by Jalen Jackson    
 class Stone:
     def __init__(self, row, col, state):
         self.state = state
@@ -397,22 +399,58 @@ def pick_best_move(moves, board):
     return bestMove
 
 
+    
 # Created By Felicia
 # input: None
 # Controls the game flow
 def play_game():
     sys.setrecursionlimit(1000)
-
+    #pygame Added
+    pygame.init()
+    size = width,height = 800, 600
+    green = 46,139,87
+    white = 255,255,255
+    gray = 192,192,192
+    black = 0,0,0
+    widthLines = (width)//SIZE
+    heightLines = height//SIZE
+    square = int(np.sqrt(width*height//(SIZE*SIZE))) #size of each square
+    rad = square//4
+    shiftR = int(square/2* width/height)
+    shiftD = int(square/2* height/width)
+    screen= pygame.display.set_mode(size)
+    #end of pygame
+    
     board = Board(SIZE)
     for i in range(SIZE):
         for j in range(SIZE):
             board.neighbors_of(board.get_stone_at(i, j))
     gameInPlay = True
-    # assume Player1 is Human and moving 'B' the blackstones
+    # assume Player1 is 'B' stones
     player1 = True
     passedTurn = False
 
     while gameInPlay:
+        #pygame stuff
+        screen.fill(green)
+        for i in range(SIZE):
+            j = i +1
+            pygame.draw.line(screen, gray,(widthLines*j, height), (widthLines*j, 0),1 )
+        for i in range(SIZE):
+            j = i +1
+            pygame.draw.line(screen, gray,(width, heightLines*j), (0, heightLines*j),1 )
+        
+        for i in range(SIZE):
+            for j in range(SIZE):
+               stone = (board.get_stone_at(i, j))
+               if stone.state == 'W':
+                   pygame.draw.circle(screen, white, [i*widthLines+shiftR, j*heightLines+shiftD], rad)
+               elif stone.state == 'B':
+                   pygame.draw.circle(screen, black, [i*widthLines+shiftR, j*heightLines+shiftD], rad)
+                       
+        pygame.display.flip()
+        
+        #end of pygame
         print(board)
 
         moves = []
